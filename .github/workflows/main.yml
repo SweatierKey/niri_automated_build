@@ -20,11 +20,12 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y \
-            build-essential pkg-config curl \
-            libwayland-dev libwlroots-dev libxkbcommon-dev \
-            libinput-dev libseat-dev seatd \
-            libdrm-dev libpixman-1-dev libcairo2-dev \
-            libpango1.0-dev scdoc git cmake
+          build-essential pkg-config curl \
+          libwayland-dev libwlroots-dev libxkbcommon-dev \
+          libinput-dev libseat-dev seatd \
+          libdrm-dev libpixman-1-dev libcairo2-dev \
+          libpango1.0-dev scdoc git cmake \
+          libpipewire-0.3-dev
 
       # 3️⃣ Installa Rust stabile
       - name: Install Rust
