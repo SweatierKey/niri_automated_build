@@ -1,0 +1,35 @@
+name: Build Niri
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up build environment
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            meson ninja-build pkg-config build-essential \
+            wayland-protocols libwayland-dev libwlroots-dev \
+            libinput-dev libxkbcommon-dev libdrm-dev libpixman-1-dev \
+            libcairo2-dev libpango1.0-dev libseat-dev seatd \
+            systemd libsystemd-dev libudev-dev libdbus-1-dev scdoc
+
+      - name: Configure and build Niri
+        run: |
+          meson setup build --buildtype=release
+          ninja -C build
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: niri-bin
+          path: build/niri
