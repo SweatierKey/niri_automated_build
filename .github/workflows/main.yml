@@ -1,5 +1,6 @@
 name: Build Niri
 
+# Trigger: push su main o PR
 on:
   push:
     branches: [ main ]
@@ -10,26 +11,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout del repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up build environment
+      # 2️⃣ Aggiorna pacchetti e installa dipendenze di sistema
+      - name: Install system dependencies
         run: |
           sudo apt update
           sudo apt install -y \
-            meson ninja-build pkg-config build-essential \
-            wayland-protocols libwayland-dev libwlroots-dev \
-            libinput-dev libxkbcommon-dev libdrm-dev libpixman-1-dev \
-            libcairo2-dev libpango1.0-dev libseat-dev seatd \
-            systemd libsystemd-dev libudev-dev libdbus-1-dev scdoc
+            build-essential pkg-config curl \
+            libwayland-dev libwlroots-dev libxkbcommon-dev \
+            libinput-dev libseat-dev seatd \
+            libdrm-dev libpixman-1-dev libcairo2-dev \
+            libpango1.0-dev scdoc git cmake
 
-      - name: Configure and build Niri
+      # 3️⃣ Installa Rust stabile
+      - name: Install Rust
         run: |
-          meson setup build --buildtype=release
-          ninja -C build
+          curl https://sh.rustup.rs -sSf | sh -s -- -y
+          echo "${HOME}/.cargo/bin" >> $GITHUB_PATH
 
-      - name: Upload binary artifact
+      # 4️⃣ Compila Niri in release
+      - name: Build Niri
+        run: |
+          cargo build --release
+
+      # 5️⃣ Carica il binario come artifact
+      - name: Upload Niri binary
         uses: actions/upload-artifact@v4
         with:
           name: niri-bin
-          path: build/niri
+          path: target/release/niri
